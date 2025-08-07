@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Manipur: The Jewel of India</title>
+
+    <link rel="icon" href="https://placehold.co/32x32/10b981/ffffff?text=M" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            /* UPDATED: Disable text selection */
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10+ */
+            user-select: none; /* Standard syntax */
+        }
+
+        /* UPDATED: Disable pointer events on images to prevent dragging/saving */
+        img {
+            pointer-events: none;
+        }
+
+        /* --- Page Pre-loader --- */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f8fafc;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #10b981; /* emerald-500 */
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* --- Hero Section Carousel Styles --- */
+        #hero-section {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .hero-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(1.1);
+            transition: opacity 1.5s ease-in-out, transform 7s ease-out;
+            z-index: 1;
+        }
+        .hero-slide.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0.3));
+            z-index: 2;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 3;
+        }
+
+        /* --- Section Title Styles with Animated Underline --- */
+        .section-title {
+            position: relative;
+            display: inline-block;
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 2.5rem;
+        }
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.75rem;
+            left: 50%;
+            width: 80px;
+            height: 4px;
+            background: #10b981;
+            border-radius: 2px;
+            transform: translateX(-50%) scaleX(0);
+            transform-origin: center;
+            transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        [data-aos="fade-up"].aos-animate .section-title::after {
+            transform: translateX(-50%) scaleX(1);
+        }
+        @media (min-width: 768px) { .section-title { font-size: 3rem; } }
+
+        /* --- Navigation Bar Styles --- */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .nav-scrolled {
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #10b981;
+            transform-origin: bottom right;
+            transition: transform 0.25s ease-out;
+        }
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+        #mobile-menu {
+            transition: transform 0.3s ease-out;
+            transform: translateY(-100%);
+        }
+        #mobile-menu.open {
+            transform: translateY(0);
+        }
+
+        /* --- Interactive Viewer (About Section) --- */
+        #interactive-viewer {
+            perspective: 1500px;
+        }
+        .viewer-content-wrapper {
+            position: relative;
+            width: 100%;
+            height: 400px;
+        }
+        .viewer-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 0.75rem; /* rounded-xl */
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); /* shadow-lg */
+            transition: transform 0.6s ease-in-out, opacity 0.5s ease-in-out;
+            opacity: 0;
+            transform: rotateY(30deg) scale(0.9);
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e2e8f0; /* slate-200 */
+        }
+        .viewer-panel.active {
+            opacity: 1;
+            transform: rotateY(0deg) scale(1);
+            z-index: 10;
+        }
+        .viewer-panel img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1rem;
+        }
+        .viewer-panel iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        .viewer-nav {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem; /* space-x-2 */
+            margin-top: 1.5rem; /* mt-6 */
+        }
+        .viewer-nav-button {
+            background-color: #e2e8f0; /* slate-200 */
+            color: #475569; /* slate-600 */
+            padding: 0.5rem 1rem;
+            border-radius: 9999px; /* rounded-full */
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 600; /* font-semibold */
+            transition: all 0.2s ease-in-out;
+            border: 2px solid transparent;
+        }
+        .viewer-nav-button:hover {
+            background-color: #cbd5e1; /* slate-300 */
+            color: #1e293b; /* slate-800 */
+        }
+        .viewer-nav-button.active {
+            background-color: #10b981; /* emerald-500 */
+            color: white;
+            box-shadow: 0 0 0 2px #f8fafc, 0 0 0 4px #10b981;
+        }
+
+        /* --- 3D Card Hover & Expandable Text --- */
+        .card-container {
+            perspective: 1000px;
+        }
+        .card-interactive {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transform-style: preserve-3d;
+        }
+        .card-interactive:hover {
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+        }
+        .card-description {
+            max-height: 4.5rem; /* Approx 3 lines */
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .card-interactive:hover .card-description {
+            max-height: 20rem; /* Large value to allow full expansion */
+        }
+        .card-interactive .card-title { transition: color 0.3s ease; }
+        .card-interactive:hover .card-title { color: #10b981; }
+
+        /* --- Carousel for Cards --- */
+        .carousel-viewport { position: relative; padding: 0 2.5rem; }
+        .carousel-container { overflow: hidden; }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            align-items: flex-start; 
+        }
+        
+        .carousel-item { 
+            flex: 0 0 100%; 
+            padding: 1rem 0.5rem; 
+        }
+        @media (min-width: 768px) { 
+            .carousel-item { 
+                flex-basis: 33.333%; 
+                padding: 1rem; 
+            } 
+        }
+        @media (min-width: 1024px) { 
+            .carousel-item { 
+                flex-basis: 25%; 
+            } 
+        }
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background-color: white;
+            color: #1e293b;
+            border-radius: 9999px;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.3s, transform 0.2s;
+            animation: pulse 2s infinite;
+        }
+        .carousel-button:hover {
+            background-color: #10b981;
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+            animation: none;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .carousel-button--left { left: 0; }
+        .carousel-button--right { right: 0; }
+        .carousel-button.hidden { opacity: 0; pointer-events: none; }
+        
+        /* Card Slideshow Styles */
+        .card-image-container {
+            position: relative;
+            width: 100%;
+            height: 14rem; /* h-56 */
+            overflow: hidden;
+        }
+        .card-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .card-image.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700">
+
+    <div id="preloader"><div class="spinner"></div></div>
+
+    <header id="navbar" class="sticky-nav bg-transparent py-3">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="#" class="nav-text text-2xl font-bold z-10 text-slate-800">Manipur</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#about" class="nav-text nav-link text-slate-800 hover:text-emerald-600 transition-colors">About</a>
+                <a href="#history" class="nav-text nav-link text-slate-800 hover:text-emerald-600 transition-colors">History</a>
+                <a href="#emblems" class="nav-text nav-link text-slate-800 hover:text-emerald-600 transition-colors">Emblems</a>
+                <a href="#places" class="nav-text nav-link text-slate-800 hover:text-emerald-600 transition-colors">Places</a>
+                <a href="#culture" class="nav-text nav-link text-slate-800 hover:text-emerald-600 transition-colors">Culture</a>
+                <a href="#cuisine" class="nav-text nav-link text-slate-800 hover:text-emerald-600 transition-colors">Cuisine</a>
+                <a href="#ingredients" class="nav-text nav-link text-slate-800 hover:text-emerald-600 transition-colors">Ingredients</a>
+            </nav>
+            <button id="mobile-menu-button" class="nav-text md:hidden z-10 text-slate-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="md:hidden bg-white absolute w-full shadow-lg">
+            <a href="#about" class="block py-2 px-6 text-sm hover:bg-emerald-50">About</a>
+            <a href="#history" class="block py-2 px-6 text-sm hover:bg-emerald-50">History</a>
+            <a href="#emblems" class="block py-2 px-6 text-sm hover:bg-emerald-50">Emblems</a>
+            <a href="#places" class="block py-2 px-6 text-sm hover:bg-emerald-50">Places</a>
+            <a href="#culture" class="block py-2 px-6 text-sm hover:bg-emerald-50">Culture</a>
+            <a href="#cuisine" class="block py-2 px-6 text-sm hover:bg-emerald-50">Cuisine</a>
+            <a href="#ingredients" class="block py-2 px-6 text-sm hover:bg-emerald-50">Ingredients</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero-section" class="flex items-center justify-center text-white">
+            <div class="hero-overlay"></div>
+            <div class="hero-content text-center px-4">
+                <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight mb-4" data-aos="fade-up">Manipur</h1>
+                <p class="text-lg sm:text-xl md:text-2xl font-light" data-aos="fade-up" data-aos-delay="200">The Jewel of India</p>
+            </div>
+        </section>
+
+        <section id="about" class="py-16 md:py-20 lg:py-24">
+            <div class="container mx-auto px-6 text-center" data-aos="fade-up">
+                <h2 class="section-title">About Manipur</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-left">
+                    <div data-aos="fade-right" data-aos-delay="200">
+                        <p class="text-base md:text-lg leading-relaxed mb-6">Welcome to Manipur, a jeweled land nestled in a lush green corner of Northeast India. Often called the "Switzerland of the East," this vibrant state is a melting pot of culture and tradition, where ancient history and breathtaking natural beauty coexist.</p>
+                        <p class="text-base md:text-lg leading-relaxed">It is famously known as the birthplace of modern Polo, a testament to its proud and spirited history. From its classical dance forms to its unique cuisine and rare flora and fauna, Manipur offers an unforgettable experience for every traveler.</p>
+                    </div>
+                    <div id="interactive-viewer" data-aos="fade-left" data-aos-delay="300">
+                        <div class="viewer-content-wrapper">
+                            <!-- Panels will be injected here -->
+                        </div>
+                        <div class="viewer-nav">
+                            <!-- Nav buttons will be injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="history" class="py-16 md:py-20 lg:py-24 bg-slate-100">
+            <div class="container mx-auto px-6 text-center" data-aos="fade-up">
+                <h2 class="section-title">A Glimpse into History</h2>
+                <div id="history-grid" class="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-12 text-center items-start">
+                    <!-- Static History Cards will be injected here by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <section id="emblems" class="py-16 md:py-20 lg:py-24">
+            <div class="container mx-auto px-6 text-center" data-aos="fade-up">
+                <h2 class="section-title">State Emblems</h2>
+                <div class="carousel-viewport">
+                    <div class="carousel-container">
+                        <div class="carousel-track"></div>
+                    </div>
+                    <button class="carousel-button carousel-button--left"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                    <button class="carousel-button carousel-button--right"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                </div>
+            </div>
+        </section>
+
+        <section id="places" class="py-16 md:py-20 lg:py-24 bg-slate-100"><div class="container mx-auto px-6 text-center" data-aos="fade-up"><h2 class="section-title">Exploring Manipur's Treasures</h2><div class="carousel-viewport"><div class="carousel-container"><div class="carousel-track"></div></div><button class="carousel-button carousel-button--left"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button><button class="carousel-button carousel-button--right"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button></div></div></section>
+        
+        <section id="culture" class="py-16 md:py-20 lg:py-24"><div class="container mx-auto px-6 text-center" data-aos="fade-up"><h2 class="section-title">The People and Culture</h2><div class="carousel-viewport"><div class="carousel-container"><div class="carousel-track"></div></div><button class="carousel-button carousel-button--left"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button><button class="carousel-button carousel-button--right"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button></div></div></section>
+        
+        <section id="cuisine" class="py-16 md:py-20 lg:py-24 bg-slate-100"><div class="container mx-auto px-6 text-center" data-aos="fade-up"><h2 class="section-title">A Taste of Tradition</h2><div class="carousel-viewport"><div class="carousel-container"><div class="carousel-track"></div></div><button class="carousel-button carousel-button--left"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button><button class="carousel-button carousel-button--right"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button></div></div></section>
+        
+        <section id="ingredients" class="py-16 md:py-20 lg:py-24"><div class="container mx-auto px-6 text-center" data-aos="fade-up"><h2 class="section-title">Manipur's Pantry</h2><div class="carousel-viewport"><div class="carousel-container"><div class="carousel-track"></div></div><button class="carousel-button carousel-button--left"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button><button class="carousel-button carousel-button--right"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button></div></div></section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 py-8"><div class="container mx-auto px-6 text-center"><p>© 2025 Explore Manipur. All Rights Reserved.</p><p class="text-sm mt-2">Designed to showcase the beauty of the Jewel of India.</p></div></footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // UPDATED: Disable right-click context menu
+            document.addEventListener('contextmenu', event => event.preventDefault());
+
+            // --- Page Pre-loader ---
+            const preloader = document.getElementById('preloader');
+            window.addEventListener('load', () => {
+                preloader.style.opacity = '0';
+                setTimeout(() => { preloader.style.display = 'none'; }, 500);
+            });
+
+            // --- Initialize AOS (Animate on Scroll) ---
+            AOS.init({ duration: 600, once: true, offset: 50 });
+
+            // --- Mobile Menu Toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                mobileMenu.classList.toggle('open');
+            });
+
+            // --- Sticky Navbar ---
+            const navbar = document.getElementById('navbar');
+            const handleNavScroll = () => {
+                navbar.classList.toggle('nav-scrolled', window.scrollY > 50);
+            };
+            handleNavScroll();
+            window.addEventListener('scroll', handleNavScroll);
+
+            // --- Hero Section Carousel ---
+            const heroSection = document.getElementById('hero-section');
+            const heroImages = [
+                'https://placehold.co/1920x1080/10b981/e0e7ff?text=Lush+Green+Hills',
+                'https://placehold.co/1920x1080/3b82f6/e0e7ff?text=Serene+Loktak+Lake',
+                'https://placehold.co/1920x1080/8b5cf6/e0e7ff?text=Shirui+Lily+in+Bloom',
+                'https://placehold.co/1920x1080/ef4444/e0e7ff?text=Cultural+Dances',
+                'https://placehold.co/1920x1080/f59e0b/ffffff?text=Polo+Match',
+                'BoyFishing.jpg' 
+            ];
+            heroImages.forEach((src, index) => {
+                const slide = document.createElement('div');
+                // FIXED: Removed typo 's' at the end of the line
+                slide.className = 'hero-slide';
+                slide.style.backgroundImage = `url('${src}')`;
+                if (index === 0) slide.classList.add('active');
+                heroSection.prepend(slide);
+            });
+            let currentImageIndex = 0;
+            const heroSlides = document.querySelectorAll('.hero-slide');
+            setInterval(() => {
+                heroSlides[currentImageIndex].classList.remove('active');
+                currentImageIndex = (currentImageIndex + 1) % heroImages.length;
+                heroSlides[currentImageIndex].classList.add('active');
+            }, 5000);
+
+            // --- DATA for Card Sections (UPDATED with real descriptions) ---
+            const siteData = {
+                history: [
+                    { img: 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Ancient+Kangla+Fort', title: 'The Kingdom of Kangleipak', desc: 'Believed to date back to 33 AD, this kingdom flourished for nearly two millennia as a sovereign power, establishing a rich cultural and political history long before its integration with larger empires.' },
+                    { img: 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Tikendrajit+Singh+Memorial', title: 'Anglo-Manipuri War of 1891', desc: "A pivotal conflict where local heroes like Tikendrajit Singh valiantly resisted the British Empire's expansion. Although it resulted in a British victory, the war is remembered as a symbol of Manipuri courage." },
+                    { img: 'https://placehold.co/400x300/e2e8f0/94a3b8?text=Imphal+War+Cemetery', title: 'The Battle of Imphal (1944)', desc: "A fierce and decisive WWII battle where Allied forces, alongside the people of Manipur, successfully halted the Japanese advance into India. Voted as Britain's greatest battle, it marked a major turning point of the war." }
+                ],
+                emblems: [
+                    { img: 'https://placehold.co/600x400/1e40af/ffffff?text=Kangla+Sha', title: 'State Emblem: Kangla Sha', desc: 'A mythical dragon-like creature that is a guardian, symbolizing the spirit of the Manipuri people.' }, 
+                    { img: 'https://placehold.co/600x400/f59e0b/ffffff?text=Sangai+Deer', title: 'State Animal: Sangai', desc: 'The endangered brow-antlered deer, found only in Keibul Lamjao National Park.' }, 
+                    { img: 'https://placehold.co/600x400/ec4899/ffffff?text=Nongin+Bird', title: 'State Bird: Nongin', desc: "Also known as Mrs. Hume's Pheasant, this is a rare and beautiful bird found in the hills." }, 
+                    { img: 'https://placehold.co/600x400/8b5cf6/ffffff?text=Shirui+Lily', title: 'State Flower: Shirui Lily', desc: 'A rare, bell-shaped lily that grows exclusively on the slopes of the Shirui Hills.' }, 
+                    { img: 'https://placehold.co/600x400/22c55e/ffffff?text=Uningthou+Tree', title: 'State Tree: Uningthou', desc: 'A tall, evergreen tree (Phoebe hainesiana) valued for its timber and cultural significance.' }, 
+                    { img: 'https://placehold.co/600x400/06b6d4/ffffff?text=Pengba+Fish', title: 'State Fish: Pengba', desc: 'A species of minor carp, culturally significant and a delicacy in Manipuri cuisine.' }, 
+                    { img: 'https://placehold.co/600x400/f59e0b/ffffff?text=Manipur+Pineapple', title: 'State Fruit: Pineapple', desc: "Manipur is famous for its exceptionally sweet and juicy 'Queen' variety of pineapples." },
+                    { img: 'https://placehold.co/600x400/166534/ffffff?text=Sana+Leipak', title: 'State Song: Sana Leipak Manipur', desc: "The official state song, which translates to 'Manipur, the Golden Land', evoking pride and love for the state's rich heritage and natural beauty." }
+                ],
+                places: [
+                    { imgs: ['https://placehold.co/600x400/3b82f6/ffffff?text=Imphal+1', 'https://placehold.co/600x400/3b82f6/ffffff?text=Imphal+2', 'https://placehold.co/600x400/3b82f6/ffffff?text=Imphal+3'], title: 'Imphal', desc: 'The capital city, featuring the historic Kangla Fort, the sacred Govindajee Temple, and the unique all-women-run Ima Keithel market.' }, 
+                    { imgs: ['https://placehold.co/600x400/10b981/ffffff?text=Loktak+Lake+1', 'https://placehold.co/600x400/10b981/ffffff?text=Loktak+Lake+2', 'https://placehold.co/600x400/10b981/ffffff?text=Loktak+Lake+3'], title: 'Loktak Lake', desc: 'The largest freshwater lake in Northeast India, famous for its floating islands (phumdis) and the unique lifestyle of its fishing community.' }, 
+                    { imgs: ['https://placehold.co/600x400/0ea5e9/ffffff?text=Keibul+Lamjao+1', 'https://placehold.co/600x400/0ea5e9/ffffff?text=Keibul+Lamjao+2', 'https://placehold.co/600x400/0ea5e9/ffffff?text=Keibul+Lamjao+3'], title: 'Keibul Lamjao National Park', desc: "The world's only floating national park, a part of Loktak Lake, and the last natural habitat of the endangered Sangai deer." }, 
+                    { imgs: ['https://placehold.co/600x400/ef4444/ffffff?text=Dzukou+Valley+1', 'https://placehold.co/600x400/ef4444/ffffff?text=Dzukou+Valley+2', 'https://placehold.co/600x400/ef4444/ffffff?text=Dzukou+Valley+3'], title: 'Dzukou Valley', desc: 'Known as the "Valley of Flowers of the North East", it offers breathtaking views with rolling hills covered in a carpet of seasonal flowers.' }, 
+                    { imgs: ['https://placehold.co/600x400/f97316/ffffff?text=Kakching+1', 'https://placehold.co/600x400/f97316/ffffff?text=Kakching+2', 'https://placehold.co/600x400/f97316/ffffff?text=Kakching+3'], title: 'Kakching', desc: "Known as the 'Granary of Manipur', Kakching is a major agricultural and commercial town, also famous for its temples and the Kakching Garden." }, 
+                    { imgs: ['https://placehold.co/600x400/ef4444/ffffff?text=Moirang+1', 'https://placehold.co/600x400/ef4444/ffffff?text=Moirang+2', 'https://placehold.co/600x400/ef4444/ffffff?text=Moirang+3'], title: 'Moirang', desc: 'A town of great historical importance where the Indian National Army (INA) flag was first hoisted on Indian soil in 1944.' }, 
+                    { imgs: ['https://placehold.co/600x400/8b5cf6/ffffff?text=Ukhrul+1', 'https://placehold.co/600x400/8b5cf6/ffffff?text=Ukhrul+2', 'https://placehold.co/600x400/8b5cf6/ffffff?text=Ukhrul+3'], title: 'Ukhrul', desc: 'A picturesque hill station, home to the Tangkhul Naga tribe and famous for the rare and beautiful Shirui Lily that blooms annually.' },
+                    { imgs: ['https://placehold.co/600x400/14b8a6/ffffff?text=Andro+1', 'https://placehold.co/600x400/14b8a6/ffffff?text=Andro+2', 'https://placehold.co/600x400/14b8a6/ffffff?text=Andro+3'], title: 'Andro', desc: 'A cultural heritage village that preserves ancient Meitei traditions, featuring a doll-house museum (Santhei Natural Park) and traditional pottery.' }, 
+                    { imgs: ['https://placehold.co/600x400/f59e0b/ffffff?text=Tamenglong+1', 'https://placehold.co/600x400/f59e0b/ffffff?text=Tamenglong+2', 'https://placehold.co/600x400/f59e0b/ffffff?text=Tamenglong+3'], title: 'Tamenglong', desc: "The 'Land of the Hornbill', a district known for its pristine forests, stunning waterfalls, deep gorges, and rich biodiversity, including rare orchids." }, 
+                    { imgs: ['https://placehold.co/600x400/64748b/ffffff?text=Moreh+1', 'https://placehold.co/600x400/64748b/ffffff?text=Moreh+2', 'https://placehold.co/600x400/64748b/ffffff?text=Moreh+3'], title: 'Moreh', desc: 'A bustling commercial town on the India-Myanmar border, serving as a vital trade gateway to Southeast Asia with its vibrant markets.' }
+                ],
+                culture: [
+                    { imgs: ['https://placehold.co/600x400/16a34a/ffffff?text=Meitei+Dance+1', 'https://placehold.co/600x400/16a34a/ffffff?text=Meitei+Festival+2', 'https://placehold.co/600x400/16a34a/ffffff?text=Meitei+Tradition+3'], title: 'The Meitei', desc: 'The majority community, celebrated for their rich traditions, including the Lai Haraoba ritual festival, the vibrant Yaosang (Holi) festival, and the graceful, world-renowned classical Manipuri dance (Raas Leela).' },
+                    { imgs: ['https://placehold.co/600x400/0284c7/ffffff?text=Naga+Textiles+1', 'https://placehold.co/600x400/0284c7/ffffff?text=Naga+Festival+2', 'https://placehold.co/600x400/0284c7/ffffff?text=Naga+Warriors+3'], title: 'The Naga Tribes', desc: 'Inhabiting the hills, various Naga tribes like the Tangkhul, Mao, and Zeliangrong have distinct cultures. They are known for their intricate hand-woven textiles, warrior traditions, and vibrant festivals.' },
+                    { imgs: ['https://placehold.co/600x400/be185d/ffffff?text=Pangal+Gathering+1', 'https://placehold.co/600x400/be185d/ffffff?text=Pangal+Cuisine+2', 'https://placehold.co/600x400/be185d/ffffff?text=Pangal+Culture+3'], title: 'Meitei Pangals (Manipuri Muslims)', desc: 'The Meitei Pangals are the indigenous Muslim community of Manipur with a unique syncretic culture that blends Islamic principles with local Meitei traditions. They have their own distinct literature, cuisine, and customs.' }
+                ],
+                cuisine: [
+                    { imgs: ['https://placehold.co/600x400/7c3aed/ffffff?text=Eromba+1', 'https://placehold.co/600x400/7c3aed/ffffff?text=Eromba+2', 'https://placehold.co/600x400/7c3aed/ffffff?text=Eromba+3'], title: 'Eromba', desc: 'A flavorful and pungent chutney made from boiled vegetables mashed with fermented fish (Ngari) and fiery chilies. A staple in every Manipuri meal.' }, 
+                    { imgs: ['https://placehold.co/600x400/db2777/ffffff?text=Kangshoi+1', 'https://placehold.co/600x400/db2777/ffffff?text=Kangshoi+2', 'https://placehold.co/600x400/db2777/ffffff?text=Kangshoi+3'], title: 'Kangshoi (Chamthong)', desc: 'A healthy and comforting vegetable stew. It is a simple, soupy dish cooked with seasonal vegetables, ginger, and ngari, garnished with fresh herbs.' }, 
+                    { imgs: ['https://placehold.co/600x400/ea580c/ffffff?text=Singju+1', 'https://placehold.co/600x400/ea580c/ffffff?text=Singju+2', 'https://placehold.co/600x400/ea580c/ffffff?text=Singju+3'], title: 'Singju', desc: 'A versatile and crunchy salad that can be made with various fresh vegetables like cabbage, lotus stem, or banana flower, mixed with roasted powders and herbs.' }, 
+                    { imgs: ['https://placehold.co/600x400/65a30d/ffffff?text=Chak-Hao+Kheer+1', 'https://placehold.co/600x400/65a30d/ffffff?text=Chak-Hao+Kheer+2', 'https://placehold.co/600x400/65a30d/ffffff?text=Chak-Hao+Kheer+3'], title: 'Chak-Hao Kheer', desc: 'A visually stunning and delicious black rice pudding. This aromatic dessert gets its deep purple color and nutty flavor from the special Chak-Hao rice.' },
+                    { imgs: ['https://placehold.co/600x400/ca8a04/ffffff?text=Paknam+1', 'https://placehold.co/600x400/ca8a04/ffffff?text=Paknam+2', 'https://placehold.co/600x400/ca8a04/ffffff?text=Paknam+3'], title: 'Paknam', desc: 'A savory pancake made from a batter of gram flour, herbs, and vegetables, wrapped in turmeric leaves and steamed or baked to perfection.' },
+                    { imgs: ['https://placehold.co/600x400/dc2626/ffffff?text=Morok+Metpa+1', 'https://placehold.co/600x400/dc2626/ffffff?text=Morok+Metpa+2', 'https://placehold.co/600x400/dc2626/ffffff?text=Morok+Metpa+3'], title: 'Morok Metpa', desc: 'A fiery and simple chutney made by mashing roasted or steamed green or red chilies with salt and sometimes fermented fish (ngari).' },
+                    { imgs: ['https://placehold.co/600x400/059669/ffffff?text=Ooti+1', 'https://placehold.co/600x400/059669/ffffff?text=Ooti+2', 'https://placehold.co/600x400/059669/ffffff?text=Ooti+3'], title: 'Ooti', desc: 'A classic vegetarian curry, typically made with peas and cooked with baking soda, which gives it a unique, traditional flavor and texture.' },
+                    { imgs: ['https://placehold.co/600x400/0284c7/ffffff?text=Nga+Thongba+1', 'https://placehold.co/600x400/0284c7/ffffff?text=Nga+Thongba+2', 'https://placehold.co/600x400/0284c7/ffffff?text=Nga+Thongba+3'], title: 'Nga Atoiba Thongba', desc: 'A hearty and popular fish stew, where the fish is mashed and cooked with a medley of fresh vegetables, herbs, and spices into a thick, flavorful gravy.' }
+                ],
+                ingredients: [
+                    { imgs: ['https://placehold.co/600x400/fbbf24/ffffff?text=Lotus+Stem+1', 'https://placehold.co/600x400/fbbf24/ffffff?text=Lotus+Stem+2', 'https://placehold.co/600x400/fbbf24/ffffff?text=Lotus+Stem+3'], title: 'Thambou (Lotus Stem)', desc: 'A crunchy, fibrous vegetable harvested from the lakes, it is a key ingredient in stews and the popular salad, Singju.' }, 
+                    { imgs: ['https://placehold.co/600x400/34d399/ffffff?text=Bamboo+Shoots+1', 'https://placehold.co/600x400/34d399/ffffff?text=Bamboo+Shoots+2', 'https://placehold.co/600x400/34d399/ffffff?text=Bamboo+Shoots+3'], title: 'Usoi (Bamboo Shoots)', desc: 'Used both fresh and fermented, bamboo shoots add a unique, pungent flavor and crisp texture to a wide variety of curries and fermented dishes.' },
+                    { imgs: ['https://placehold.co/600x400/a78bfa/ffffff?text=Fermented+Bamboo+1', 'https://placehold.co/600x400/a78bfa/ffffff?text=Fermented+Bamboo+2', 'https://placehold.co/600x400/a78bfa/ffffff?text=Fermented+Bamboo+3'], title: 'Soibum (Fermented Bamboo)', desc: 'A pungent and flavorful ingredient made from fermented bamboo shoots, it adds a distinct sour and savory taste to many Manipuri curries.' }, 
+                    { imgs: ['https://placehold.co/600x400/f87171/ffffff?text=Ngari+1', 'https://placehold.co/600x400/f87171/ffffff?text=Ngari+2', 'https://placehold.co/600x400/f87171/ffffff?text=Ngari+3'], title: 'Ngari (Fermented Fish)', desc: 'Considered the soul of Manipuri cuisine, this sun-dried and fermented fish provides a strong, umami flavor essential for dishes like Eromba and Kangshoi.' }, 
+                    { imgs: ['https://placehold.co/600x400/16a34a/ffffff?text=Yongchak+1', 'https://placehold.co/600x400/16a34a/ffffff?text=Yongchak+2', 'https://placehold.co/600x400/16a34a/ffffff?text=Yongchak+3'], title: 'Yongchak (Stinky Beans)', desc: 'Also known as Parkia speciosa or petai, these long, twisted beans have a strong, unique flavor and are often stir-fried or added to stews.' },
+                    { imgs: ['https://placehold.co/600x400/ef4444/ffffff?text=U-Morok+1', 'https://placehold.co/600x400/ef4444/ffffff?text=U-Morok+2', 'https://placehold.co/600x400/ef4444/ffffff?text=U-Morok+3'], title: 'U-Morok (King Chilly)', desc: "One of the hottest chilies in the world, the Bhut Jolokia or Ghost Pepper is used sparingly to add intense heat and a unique aroma to dishes." },
+                    { imgs: ['https://placehold.co/600x400/22c55e/ffffff?text=Hooker+Chives+1', 'https://placehold.co/600x400/22c55e/ffffff?text=Hooker+Chives+2', 'https://placehold.co/600x400/22c55e/ffffff?text=Hooker+Chives+3'], title: 'Maroi Nakuppi (Hooker Chives)', desc: 'A type of garlic chive with a distinct, pungent flavor, commonly used as a garnish or a key ingredient in various stews and salads.' },
+                    { imgs: ['https://placehold.co/600x400/10b981/ffffff?text=Chinese+Chives+1', 'https://placehold.co/600x400/10b981/ffffff?text=Chinese+Chives+2', 'https://placehold.co/600x400/10b981/ffffff?text=Chinese+Chives+3'], title: 'Maroi Napakpi (Chinese Chives)', desc: "A milder herb compared to Nakuppi, it's widely used in Manipuri cooking for garnishing and adding a subtle onion-like flavor." },
+                    { imgs: ['https://placehold.co/600x400/a16207/ffffff?text=Hawaijar+1', 'https://placehold.co/600x400/a16207/ffffff?text=Hawaijar+2', 'https://placehold.co/600x400/a16207/ffffff?text=Hawaijar+3'], title: 'Hawaijar (Fermented Soybeans)', desc: 'Similar to Japanese natto, this ingredient is known for its strong, pungent smell and sticky texture, used to make flavorful chutneys and curries.' },
+                    { imgs: ['https://placehold.co/600x400/065f46/ffffff?text=Lemon+Basil+1', 'https://placehold.co/600x400/065f46/ffffff?text=Lemon+Basil+2', 'https://placehold.co/600x400/065f46/ffffff?text=Lemon+Basil+3'], title: 'Mayang-Ton (Lemon Basil)', desc: 'An aromatic herb that imparts a fresh, citrusy flavor to salads, stews, and especially fish dishes, balancing the strong flavors of other ingredients.' },
+                    { imgs: ['https://placehold.co/600x400/f43f5e/ffffff?text=Chameleon+Plant+1', 'https://placehold.co/600x400/f43f5e/ffffff?text=Chameleon+Plant+2', 'https://placehold.co/600x400/f43f5e/ffffff?text=Chameleon+Plant+3'], title: 'Toning-Khok (Chameleon Plant)', desc: 'Also known as Houttuynia cordata, this herb has a unique, slightly fishy taste and is often eaten raw in salads or used as a garnish.' }
+                ]
+            };
+
+            // --- Setup for Interactive Viewer in About Section ---
+            function setupInteractiveViewer() {
+                const viewerData = [
+                    { type: 'image', content: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Flag_of_Manipur.svg/1280px-Flag_of_Manipur.svg.png', label: 'Flag' },
+                    { type: 'image', content: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Emblem_of_Manipur.svg/1024px-Emblem_of_Manipur.svg.png', label: 'Emblem' },
+                    { type: 'image', content: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Meitei_Mayek_script.svg/1200px-Meitei_Mayek_script.svg.png', label: 'Meitei Mayek' },
+                    { type: 'map', content: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1852651.930981765!2d92.9543958749718!3d24.72088318465065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x374926b791339e87%3A0x1f563364f332252d!2sManipur!5e0!3m2!1sen!2sin!4v1694182824742!5m2!1sen!2sin', label: 'Map' }
+                ];
+
+                const contentWrapper = document.querySelector('#interactive-viewer .viewer-content-wrapper');
+                const navWrapper = document.querySelector('#interactive-viewer .viewer-nav');
+
+                viewerData.forEach((item, index) => {
+                    const panel = document.createElement('div');
+                    panel.className = `viewer-panel ${index === 0 ? 'active' : ''}`;
+                    panel.dataset.index = index;
+                    if (item.type === 'image') {
+                        panel.innerHTML = `<img src="${item.content}" alt="${item.label}" onerror="this.onerror=null; this.src='https://placehold.co/400x400/e2e8f0/94a3b8?text=Image+Not+Found';">`;
+                    } else if (item.type === 'map') {
+                        panel.innerHTML = `<iframe src="${item.content}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+                    }
+                    contentWrapper.appendChild(panel);
+
+                    const button = document.createElement('button');
+                    button.className = `viewer-nav-button ${index === 0 ? 'active' : ''}`;
+                    button.textContent = item.label;
+                    button.dataset.index = index;
+                    navWrapper.appendChild(button);
+                });
+
+                const buttons = navWrapper.querySelectorAll('.viewer-nav-button');
+                const panels = contentWrapper.querySelectorAll('.viewer-panel');
+
+                navWrapper.addEventListener('click', (e) => {
+                    if (e.target.matches('.viewer-nav-button')) {
+                        const targetIndex = e.target.dataset.index;
+
+                        buttons.forEach((btn, i) => {
+                            btn.classList.toggle('active', i == targetIndex);
+                        });
+                        panels.forEach((panel, i) => {
+                            panel.classList.toggle('active', i == targetIndex);
+                        });
+                    }
+                });
+            }
+
+            // --- Function to create a card for a static grid ---
+            function createStaticCard(item, index) {
+                const delay = (index % 4) * 100;
+                return `
+                    <div class="card-container" data-aos="fade-up" data-aos-delay="${delay}">
+                        <div class="bg-white rounded-xl shadow-lg overflow-hidden card-interactive flex flex-col h-full">
+                            <img src="${item.img}" alt="${item.title}" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/400x300/e2e8f0/94a3b8?text=Image+Not+Found';">
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-xl font-bold mb-2 card-title">${item.title}</h3>
+                                <p class="text-sm md:text-base card-description flex-grow">${item.desc}</p>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // --- Function to create a simple carousel card (no internal slideshow) ---
+            function createSimpleCarouselCard(item, index) {
+                const delay = (index % 4) * 100;
+                return `
+                    <div class="carousel-item" data-aos="fade-up" data-aos-delay="${delay}">
+                        <div class="card-container">
+                            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-interactive flex flex-col h-full">
+                                <img src="${item.img}" alt="${item.title}" class="w-full h-56 object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/e2e8f0/94a3b8?text=Image+Not+Found';">
+                                <div class="p-6 flex flex-col flex-grow">
+                                    <h3 class="text-xl font-bold mb-2 card-title">${item.title}</h3>
+                                    <p class="text-sm md:text-base card-description flex-grow">${item.desc}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // --- Function to create a card with an image slideshow ---
+            function createSlideshowCard(item, index) {
+                const delay = (index % 4) * 100;
+                const imagesHtml = item.imgs.map((src, i) => `<img src="${src}" alt="${item.title} image ${i+1}" class="card-image ${i === 0 ? 'active' : ''}" onerror="this.onerror=null; this.src='https://placehold.co/600x400/e2e8f0/94a3b8?text=Image+Not+Found';">`).join('');
+                
+                return `
+                    <div class="carousel-item" data-aos="fade-up" data-aos-delay="${delay}">
+                        <div class="card-container">
+                            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-interactive flex flex-col h-full">
+                                <div class="card-image-container">
+                                    ${imagesHtml}
+                                </div>
+                                <div class="p-6 flex flex-col flex-grow">
+                                    <h3 class="text-xl font-bold mb-2 card-title">${item.title}</h3>
+                                    <p class="text-sm md:text-base card-description flex-grow">${item.desc}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+
+            // --- Function to start automatic slideshows for cards ---
+            function startAutoSlideshows() {
+                const slideshowContainers = document.querySelectorAll('.card-image-container');
+                slideshowContainers.forEach(container => {
+                    const images = container.querySelectorAll('.card-image');
+                    if (images.length > 1) {
+                        let currentIndex = 0;
+                        setInterval(() => {
+                            images[currentIndex].classList.remove('active');
+                            currentIndex = (currentIndex + 1) % images.length;
+                            images[currentIndex].classList.add('active');
+                        }, 3000); // Change image every 3 seconds
+                    }
+                });
+            }
+            
+            // --- Setup for Static Grids ---
+            function setupStaticGrid(gridId, data) {
+                const grid = document.getElementById(gridId);
+                if(grid) {
+                    grid.innerHTML = data.map(createStaticCard).join('');
+                }
+            }
+
+            // --- Setup for Carousels ---
+            function setupCarousel(sectionId, data, cardCreator) {
+                const section = document.querySelector(sectionId);
+                if (!section) return; 
+                const track = section.querySelector('.carousel-track');
+                if (!track) return;
+                track.innerHTML = data.map(cardCreator).join('');
+
+                const items = Array.from(track.children);
+                const prevButton = section.querySelector('.carousel-button--left');
+                const nextButton = section.querySelector('.carousel-button--right');
+                let currentTrackIndex = 0;
+                
+                function updateCarousel() {
+                    let itemsPerPage = window.innerWidth < 768 ? 1 : (window.innerWidth < 1024 ? 3 : 4);
+                    const totalItems = items.length;
+                    itemsPerPage = Math.min(itemsPerPage, totalItems);
+
+                    if (totalItems <= itemsPerPage) {
+                        prevButton.classList.add('hidden');
+                        nextButton.classList.add('hidden');
+                        track.classList.add('justify-center');
+                    } else {
+                        prevButton.classList.toggle('hidden', currentTrackIndex === 0);
+                        nextButton.classList.toggle('hidden', currentTrackIndex >= totalItems - itemsPerPage);
+                        track.classList.remove('justify-center');
+                    }
+                    
+                    const itemWidthPercentage = 100 / items.length;
+                    const trackWidthPercentage = itemWidthPercentage * totalItems;
+                    track.style.width = `${trackWidthPercentage}%`;
+                    
+                    const newTransform = -currentTrackIndex * (100 / (totalItems / (totalItems / itemsPerPage)));
+                    track.style.transform = `translateX(${newTransform}%)`;
+                }
+
+                nextButton.addEventListener('click', () => { 
+                    let itemsPerPage = window.innerWidth < 768 ? 1 : (window.innerWidth < 1024 ? 3 : 4);
+                    if (currentTrackIndex < items.length - Math.min(itemsPerPage, items.length)) { 
+                        currentTrackIndex++; 
+                        updateCarousel(); 
+                    } 
+                });
+                prevButton.addEventListener('click', () => { 
+                    if (currentTrackIndex > 0) { 
+                        currentTrackIndex--; 
+                        updateCarousel(); 
+                    } 
+                });
+                
+                window.addEventListener('resize', () => { 
+                    currentTrackIndex = 0; 
+                    updateCarousel(); 
+                });
+                updateCarousel();
+            }
+
+            // --- Initialize all sections ---
+            setupInteractiveViewer();
+            setupStaticGrid('history-grid', siteData.history);
+            setupCarousel('#emblems', siteData.emblems, createSimpleCarouselCard);
+            setupCarousel('#places', siteData.places, createSlideshowCard);
+            setupCarousel('#culture', siteData.culture, createSlideshowCard);
+            setupCarousel('#cuisine', siteData.cuisine, createSlideshowCard);
+            setupCarousel('#ingredients', siteData.ingredients, createSlideshowCard);
+            
+            // --- Start automatic slideshows after carousels are built ---
+            startAutoSlideshows();
+
+            // --- 3D Tilt Effect for all interactive cards ---
+            document.querySelectorAll('.card-interactive').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const { width, height } = rect;
+                    const rotateX = (y / height - 0.5) * -20;
+                    const rotateY = (x / width - 0.5) * 20;
+                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
